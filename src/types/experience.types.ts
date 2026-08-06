@@ -20,7 +20,9 @@ export interface Memory {
   date: string;
   title: string;
   description: string;
-  image: string;
+  images: string[];
+  imageLayout?: "stacked";
+  rotatedImages?: string[];
   location?: string;
 }
 
@@ -30,6 +32,8 @@ export interface Photo {
   alt: string;
   caption: string;
   rotation: number;
+  mediaType: "image" | "video";
+  sideways?: boolean;
 }
 
 export interface LoveReason {

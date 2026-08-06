@@ -95,11 +95,11 @@ Todas las rutas públicas pasan por `src/utils/publicAsset.ts`, por lo que funci
 Coloca archivos autorizados en:
 
 ```text
-public/audio/serenata.mp3
+public/video/serenata.mp4
 public/audio/introduccion-voz.mp3
 ```
 
-La voz es opcional. Si un archivo no existe o el navegador bloquea la reproducción automática, la aplicación muestra un control manual y continúa funcionando.
+La voz es opcional. El video se muestra durante la serenata y, al continuar la historia, permanece únicamente su audio. Si un archivo no existe o el navegador bloquea la reproducción automática, la aplicación muestra un control manual y continúa funcionando.
 
 No se incluye música comercial. Verifica que tengas los derechos o la autorización necesarios antes de publicar audio en internet.
 

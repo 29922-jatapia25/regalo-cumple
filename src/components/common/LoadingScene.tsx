@@ -15,7 +15,7 @@ export function LoadingScene() {
 
     void preload(
       publicAsset(experienceConfig.coverImage),
-      publicAsset(experienceConfig.audio.serenade),
+      publicAsset(experienceConfig.serenadeVideo),
     ).then(() => {
       const remaining = Math.max(0, 1800 - (Date.now() - startedAt));
       window.setTimeout(() => {

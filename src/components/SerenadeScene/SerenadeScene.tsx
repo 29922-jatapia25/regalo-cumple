@@ -3,10 +3,9 @@ import { Music2 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { experienceConfig } from "../../config/experience.config";
 import { useExperience } from "../../context/ExperienceContext";
-import { useAudio } from "../../hooks/useAudio";
+import type { useAudio } from "../../hooks/useAudio";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { publicAsset } from "../../utils/publicAsset";
-import { AudioControls } from "../common/AudioControls";
 import { Button } from "../common/Button";
 
 const petals = Array.from({ length: 16 }, (_, index) => ({
@@ -16,11 +15,14 @@ const petals = Array.from({ length: 16 }, (_, index) => ({
   duration: `${8 + (index % 5)}s`,
 }));
 
-export function SerenadeScene() {
+interface SerenadeSceneProps {
+  audio: ReturnType<typeof useAudio>;
+}
+
+export function SerenadeScene({ audio }: SerenadeSceneProps) {
   const { state, dispatch } = useExperience();
   const reducedMotion = useReducedMotion();
   const [elapsed, setElapsed] = useState(reducedMotion ? 99 : 0);
-  const audio = useAudio(publicAsset(experienceConfig.audio.serenade));
   const playSerenade = audio.play;
 
   useEffect(() => {
@@ -47,15 +49,7 @@ export function SerenadeScene() {
   }, [playSerenade]);
 
   return (
-    <main className="relative isolate min-h-dvh overflow-hidden bg-background">
-      <motion.img
-        src={publicAsset(experienceConfig.coverImage)}
-        alt="Serenata nocturna bajo un cielo estrellado"
-        className="absolute inset-0 h-full w-full object-cover object-[68%_center] sm:object-center"
-        initial={{ scale: 1.04 }}
-        animate={{ scale: state.animationsEnabled && !reducedMotion ? 1.12 : 1.04 }}
-        transition={{ duration: 24, ease: "linear" }}
-      />
+    <main className="relative isolate min-h-dvh overflow-hidden bg-transparent">
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,8,18,.5),rgba(7,8,18,.18)_36%,rgba(7,8,18,.9)_88%),linear-gradient(90deg,rgba(7,8,18,.65),transparent_65%)]" />
 
       {state.animationsEnabled && elapsed >= 6 && (
@@ -143,14 +137,6 @@ export function SerenadeScene() {
           <Music2 size={17} /> Reproducir serenata
         </Button>
       )}
-
-      <AudioControls
-        {...audio}
-        onPlay={() => void audio.play()}
-        onPause={audio.pause}
-        onToggleMute={audio.toggleMute}
-        onVolume={audio.setVolume}
-      />
     </main>
   );
 }

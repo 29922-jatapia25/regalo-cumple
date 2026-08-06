@@ -24,7 +24,7 @@ export function AudioControls({
   if (unavailable) {
     return (
       <div className="fixed bottom-[max(0.8rem,env(safe-area-inset-bottom))] left-1/2 z-50 -translate-x-1/2 rounded-full border border-white/10 bg-background/90 px-4 py-2 text-xs text-muted backdrop-blur-xl">
-        Agrega serenata.mp3 para escuchar la música
+        Agrega serenata.mp4 en public/video para escuchar la música
       </div>
     );
   }

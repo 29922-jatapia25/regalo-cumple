@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
 
 interface UseAudioOptions {
   fadeInSeconds?: number;
@@ -6,10 +12,9 @@ interface UseAudioOptions {
 }
 
 export function useAudio(
-  src: string,
+  mediaRef: RefObject<HTMLMediaElement | null>,
   { fadeInSeconds = 2.5, initialVolume = 0.75 }: UseAudioOptions = {},
 ) {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const fadeFrameRef = useRef<number | null>(null);
   const mutedRef = useRef(false);
   const volumeRef = useRef(initialVolume);
@@ -20,11 +25,10 @@ export function useAudio(
   const [unavailable, setUnavailable] = useState(false);
 
   useEffect(() => {
-    const audio = new Audio(src);
-    audio.preload = "auto";
-    audio.loop = true;
+    const audio = mediaRef.current;
+    if (!audio) return;
+
     audio.volume = 0;
-    audioRef.current = audio;
 
     const onPlay = () => setIsPlaying(true);
     const onPause = () => setIsPlaying(false);
@@ -39,12 +43,11 @@ export function useAudio(
       audio.removeEventListener("play", onPlay);
       audio.removeEventListener("pause", onPause);
       audio.removeEventListener("error", onError);
-      audioRef.current = null;
     };
-  }, [src]);
+  }, [mediaRef]);
 
   const play = useCallback(async () => {
-    const audio = audioRef.current;
+    const audio = mediaRef.current;
     if (!audio) return false;
 
     try {
@@ -67,25 +70,25 @@ export function useAudio(
       setBlocked(true);
       return false;
     }
-  }, [fadeInSeconds]);
+  }, [fadeInSeconds, mediaRef]);
 
-  const pause = useCallback(() => audioRef.current?.pause(), []);
+  const pause = useCallback(() => mediaRef.current?.pause(), [mediaRef]);
 
   const toggleMute = useCallback(() => {
     setMuted((current) => {
       const next = !current;
       mutedRef.current = next;
-      if (audioRef.current) audioRef.current.muted = next;
+      if (mediaRef.current) mediaRef.current.muted = next;
       return next;
     });
-  }, []);
+  }, [mediaRef]);
 
   const setVolume = useCallback((next: number) => {
     const normalized = Math.max(0, Math.min(1, next));
     volumeRef.current = normalized;
     setVolumeState(normalized);
-    if (audioRef.current) audioRef.current.volume = normalized;
-  }, []);
+    if (mediaRef.current) mediaRef.current.volume = normalized;
+  }, [mediaRef]);
 
   return {
     isPlaying,
