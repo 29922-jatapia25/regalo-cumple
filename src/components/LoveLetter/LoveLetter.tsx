@@ -1,39 +1,12 @@
-import { useRef, useState } from "react";
-import { MailOpen, Mic2, Volume2 } from "lucide-react";
+import { useState } from "react";
+import { MailOpen } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { experienceConfig } from "../../config/experience.config";
 import { letter } from "../../data/letter";
-import { publicAsset } from "../../utils/publicAsset";
-import { Button } from "../common/Button";
 import { SectionHeading } from "../common/SectionHeading";
 
 export function LoveLetter() {
   const [opened, setOpened] = useState(false);
-  const [voicePlaying, setVoicePlaying] = useState(false);
-  const [voiceUnavailable, setVoiceUnavailable] = useState(false);
-  const voiceRef = useRef<HTMLAudioElement | null>(null);
-
-  const toggleVoice = async () => {
-    if (!voiceRef.current) {
-      const voice = new Audio(publicAsset(experienceConfig.audio.voiceIntro));
-      voice.addEventListener("ended", () => setVoicePlaying(false));
-      voice.addEventListener("error", () => setVoiceUnavailable(true));
-      voiceRef.current = voice;
-    }
-
-    if (voicePlaying) {
-      voiceRef.current.pause();
-      setVoicePlaying(false);
-      return;
-    }
-
-    try {
-      await voiceRef.current.play();
-      setVoicePlaying(true);
-    } catch {
-      setVoiceUnavailable(true);
-    }
-  };
 
   return (
     <section id="carta" className="scroll-mt-24 bg-[#e9dcca] px-4 py-20 text-background sm:px-6 sm:py-28">
@@ -99,9 +72,17 @@ export function LoveLetter() {
                   ))}
                 </div>
                 <motion.p
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.25 + letter.paragraphs.length * 0.28 }}
+                  className="mt-7 font-display text-xl font-bold text-wine sm:text-2xl"
+                >
+                  {letter.celebration}
+                </motion.p>
+                <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 1.2 }}
+                  transition={{ delay: 0.5 + letter.paragraphs.length * 0.28 }}
                   className="mt-7 font-display text-xl italic leading-relaxed text-wine sm:text-2xl"
                 >
                   {letter.closing}
@@ -109,24 +90,12 @@ export function LoveLetter() {
                 <motion.p
                   initial={{ opacity: 0, x: 8 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.5 }}
+                  transition={{ delay: 0.75 + letter.paragraphs.length * 0.28 }}
                   className="mt-8 whitespace-pre-line text-right font-display text-xl italic text-background"
                 >
                   {letter.signature}
                 </motion.p>
 
-                <div className="mt-9 border-t border-wine/10 pt-6">
-                  {!voiceUnavailable ? (
-                    <Button variant="outline" onClick={() => void toggleVoice()} className="!border-wine/25 !text-wine hover:!bg-wine/5">
-                      {voicePlaying ? <Volume2 size={17} /> : <Mic2 size={17} />}
-                      {voicePlaying ? "Pausar mi voz" : "Escuchar esta carta"}
-                    </Button>
-                  ) : (
-                    <p className="text-xs leading-5 text-wine/60">
-                      Puedes agregar una grabación en public/audio/introduccion-voz.mp3.
-                    </p>
-                  )}
-                </div>
               </div>
             </motion.article>
           )}

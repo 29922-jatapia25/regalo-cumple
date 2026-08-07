@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Gift, Heart, Play, RotateCcw } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { experienceConfig } from "../../config/experience.config";
@@ -19,6 +19,7 @@ export function FinalSurprise() {
   const [opened, setOpened] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
   const timerRef = useRef<number | null>(null);
+  const activePointerRef = useRef<number | null>(null);
 
   const stopHold = () => {
     if (timerRef.current !== null) window.clearInterval(timerRef.current);
@@ -39,6 +40,31 @@ export function FinalSurprise() {
       }
     }, 32);
   };
+
+  const beginPointerHold = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (activePointerRef.current !== null) return;
+
+    event.preventDefault();
+    activePointerRef.current = event.pointerId;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    startHold();
+  };
+
+  const endPointerHold = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (activePointerRef.current !== event.pointerId) return;
+
+    activePointerRef.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    stopHold();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current !== null) window.clearInterval(timerRef.current);
+    };
+  }, []);
 
   return (
     <main className="relative isolate grid min-h-dvh overflow-hidden bg-background px-4 py-[max(2rem,env(safe-area-inset-top))] sm:px-6">
@@ -72,7 +98,11 @@ export function FinalSurprise() {
             </p>
 
             <div className="relative mx-auto mt-10 grid size-48 place-items-center sm:size-56">
-              <svg className="absolute inset-0 h-full w-full -rotate-90" viewBox="0 0 100 100" aria-hidden="true">
+              <svg
+                className="pointer-events-none absolute inset-0 h-full w-full -rotate-90"
+                viewBox="0 0 100 100"
+                aria-hidden="true"
+              >
                 <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.08)" strokeWidth="2" />
                 <motion.circle
                   cx="50"
@@ -89,10 +119,10 @@ export function FinalSurprise() {
               </svg>
               <button
                 type="button"
-                onPointerDown={startHold}
-                onPointerUp={stopHold}
-                onPointerCancel={stopHold}
-                onPointerLeave={stopHold}
+                onPointerDown={beginPointerHold}
+                onPointerUp={endPointerHold}
+                onPointerCancel={endPointerHold}
+                onContextMenu={(event) => event.preventDefault()}
                 onKeyDown={(event) => {
                   if ((event.key === " " || event.key === "Enter") && !event.repeat) {
                     event.preventDefault();
@@ -103,7 +133,7 @@ export function FinalSurprise() {
                   if (event.key === " " || event.key === "Enter") stopHold();
                 }}
                 aria-label="Mantén presionado para abrir el regalo"
-                className="final-heart grid size-32 touch-none place-items-center rounded-full border border-dusty-rose/25 bg-wine/35 text-dusty-rose shadow-[0_0_70px_rgba(111,38,61,.4)] outline-none transition hover:scale-105 focus-visible:ring-4 focus-visible:ring-gold/45 sm:size-36"
+                className="final-heart relative z-10 grid size-32 touch-none place-items-center rounded-full border border-dusty-rose/25 bg-wine/35 text-dusty-rose shadow-[0_0_70px_rgba(111,38,61,.4)] outline-none transition hover:scale-105 focus-visible:ring-4 focus-visible:ring-gold/45 sm:size-36"
               >
                 <Heart size={44} fill="currentColor" />
               </button>
@@ -140,8 +170,8 @@ export function FinalSurprise() {
             </p>
 
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button onClick={() => setShowVideo((value) => !value)} className="w-full sm:w-auto">
-                <Play size={17} /> {showVideo ? "Ocultar video" : "Ver nuestro video"}
+              <Button onClick={() => setShowVideo(true)} className="w-full sm:w-auto">
+                <Play size={17} /> Ver nuestro video
               </Button>
               <Button
                 variant="ghost"
@@ -153,11 +183,15 @@ export function FinalSurprise() {
             </div>
 
             {showVideo && (
-              <div className="mt-8 text-left">
-                <Suspense fallback={<div className="aspect-video animate-pulse rounded-2xl bg-white/5" />}>
-                  <GiftVideo />
-                </Suspense>
-              </div>
+              <Suspense
+                fallback={
+                  <div className="fixed inset-0 z-[140] grid place-items-center bg-[#05060c]/95">
+                    <div className="size-14 animate-pulse rounded-full border-2 border-gold/50" />
+                  </div>
+                }
+              >
+                <GiftVideo onClose={() => setShowVideo(false)} />
+              </Suspense>
             )}
           </motion.section>
         )}

@@ -106,7 +106,7 @@ export function PolaroidGallery() {
                 aria-label={`Abrir ${photo.mediaType === "video" ? "video" : "fotografía"}: ${photo.caption}`}
                 className="group w-[76vw] max-w-[19rem] shrink-0 snap-center rounded-sm bg-white p-2 pb-4 text-left shadow-[0_15px_35px_rgba(39,28,32,.15)] outline-none transition focus-visible:ring-4 focus-visible:ring-wine/30 sm:w-[19rem] sm:p-3 sm:pb-6"
               >
-                <div className="relative aspect-[4/5] overflow-hidden bg-surface/10 [container-type:size]">
+                <div className="relative aspect-[4/5] overflow-hidden bg-surface/10">
                   {photo.mediaType === "video" ? (
                     <>
                       <video
@@ -130,7 +130,7 @@ export function PolaroidGallery() {
                       loading="lazy"
                       className={
                         photo.sideways
-                          ? "absolute left-1/2 top-1/2 h-[100cqw] w-[100cqh] max-w-none -translate-x-1/2 -translate-y-1/2 -rotate-90 object-cover saturate-[.82] transition duration-500 group-hover:scale-105 group-hover:saturate-100"
+                          ? "absolute left-1/2 top-1/2 h-[80%] w-[125%] max-w-none -translate-x-1/2 -translate-y-1/2 -rotate-90 object-cover saturate-[.82] transition duration-500 group-hover:scale-105 group-hover:saturate-100"
                           : "h-full w-full object-cover saturate-[.82] transition duration-500 group-hover:scale-105 group-hover:saturate-100"
                       }
                     />
@@ -176,7 +176,13 @@ export function PolaroidGallery() {
               </button>
 
               <div className="overflow-hidden rounded-[1.4rem] border border-white/10 bg-surface shadow-2xl sm:grid sm:grid-cols-[1.4fr_.6fr] sm:rounded-[2rem]">
-                <div className="relative flex max-h-[67dvh] min-h-[50dvh] overflow-hidden bg-black/30 [container-type:size] sm:max-h-[78dvh]">
+                <div
+                  className={
+                    activePhoto.mediaType === "image" && activePhoto.sideways
+                      ? "relative aspect-video overflow-hidden bg-black/30"
+                      : "relative flex max-h-[67dvh] min-h-[50dvh] overflow-hidden bg-black/30 sm:max-h-[78dvh]"
+                  }
+                >
                   {activePhoto.mediaType === "video" ? (
                     <video
                       key={activePhoto.id}
@@ -194,7 +200,7 @@ export function PolaroidGallery() {
                       alt={activePhoto.alt}
                       className={
                         activePhoto.sideways
-                          ? "absolute left-1/2 top-1/2 h-[100cqw] w-[100cqh] max-w-none -translate-x-1/2 -translate-y-1/2 -rotate-90 object-contain"
+                          ? "absolute left-1/2 top-1/2 h-[177.78%] w-[56.25%] max-w-none -translate-x-1/2 -translate-y-1/2 -rotate-90 object-contain"
                           : "h-full max-h-[67dvh] w-full object-contain sm:max-h-[78dvh]"
                       }
                     />
